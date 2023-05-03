@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import time
 from dotenv.main import load_dotenv
 import os
+import dateparser
 
 load_dotenv()
 
@@ -40,14 +41,18 @@ class SessionSysacad(object):
         response = self.session.get(url,data=data)
     
     #Extraer los datos de una tabla
-    def _data_from_table(bs_html, keys):
+    def _data_from_tables(bs_html,keys):
         data = []
         for tr in bs_html('tr'):
-            tds = {}
-            i = 0
+            tds={}
+            i=0
             for td in tr('td'):
-                tds[keys[i]] = td.getText()
-                i += 1
+                if keys[i] == 'Inasistencias':
+                    link = td.find('a').get('href')
+                    tds[keys[i]] = link 
+                else:
+                    tds[keys[i]] = td.getText()
+                i+=1
             data.append(tds)
         del data[0]
         return data
@@ -92,9 +97,56 @@ class SessionSysacad(object):
                 )
         data['examenes'] = self._data_from_table(html,keys)
         for examen in data['examenes']:
-            examen
+            examen['fecha'] = dateparser.parse(examen['fecha'])
+            examen['nota'] = {
+				"uno": 1,
+				"dos": 2,
+				"tres": 3,
+				"cuatro": 4,
+				"cinco": 5,
+				"seis": 6,
+				"siete": 7,
+				"ocho": 8,
+				"nueve": 9,
+				"diez": 10,
+				"Ausen.": None
+			}[examen['nota']]
+            examen['codigo'] = int(examen['codigo'])
+        
+        return data
 
+    # def get_inasistencias(self,link): #TODO: Ejecutar solo cuando se pida para una sola materia
+    #     data={}
+    #     response = self._get(link)
+    #     html = BeautifulSoup(response.content, 'html.parser')
 
+    #     #Parsear la tabla de inasistencias
+    #     keys = (    'Fecha', 
+    #                 'Justificada' 
+    #             )
+    #     data['inasistencias'] = self._data_from_table(html,keys)
+    #     for inasistencia in data['inasistencias']:
+    #         inasistencia['fecha'] = dateparser.parse(inasistencia['fecha'])
+        
+        return data
 
+    def get_cursando(self):
+        data={}
+        response=self._get(self.url['cursado'])
+        html = BeautifulSoup(response.content, 'html.parser')
 
+        #Parsear la tabla de cursado
+        keys = (    'Año',
+                    'Materia',
+                    'Comisión',
+                    'Horarios',
+                    'Notas',
+                    'Condición',
+                    'Obs.',
+                    'Inasistencias' )
+        data['cursando'] = self._data_from_table(html,keys)
+       
+        
+        return data
+    
 
