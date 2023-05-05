@@ -1,1 +1,1 @@
-from . import crud_usuarios
+from .crud_usuarios import crud_usuarios

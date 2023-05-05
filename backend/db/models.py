@@ -8,7 +8,7 @@
 #     TODO: definir que le ponemos al campus y que necesitamos del mismo
 
 
-from sqlalchemy import Column, Integer, String, ForeignKey, JSON, PrimaryKeyConstraint, UniqueConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey, JSON, PrimaryKeyConstraint, UniqueConstraint, Boolean
 from sqlalchemy.orm import relationship
 # from datetime import datetime
 import sys
@@ -22,7 +22,7 @@ class Usuario(Base):
     nombre = Column(String, nullable=False)
     email = Column(String, nullable=False)
     password = Column(String, nullable=False)
-    is_active = Column(Integer, nullable=False, default=1)
+    is_active = Column(Boolean, nullable=False, default=True)
 
     cuentasysacad = relationship("CuentaSysacad", back_populates="usuario")
     cuentacampus = relationship("CuentaCampus", back_populates="usuario")
