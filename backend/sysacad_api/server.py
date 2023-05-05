@@ -1,11 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import time
-from dotenv.main import load_dotenv
-import os
-import dateparser
 
-load_dotenv()
 
 class SessionSysacad(object):
 
@@ -39,9 +34,10 @@ class SessionSysacad(object):
     def _get(self,ext_url,data=None):
         url = self.url_base + ext_url
         response = self.session.get(url,data=data)
+        return response
     
     #Extraer los datos de una tabla
-    def _data_from_tables(bs_html,keys):
+    def _data_from_tables(self,bs_html,keys):
         data = []
         for tr in bs_html('tr'):
             tds={}
@@ -79,6 +75,7 @@ class SessionSysacad(object):
         'submit': 'Acceder',
         }
 
+        print(login_data)
         response = self.session.post(self.url_base, data=login_data)
         print(response)
 
@@ -86,6 +83,7 @@ class SessionSysacad(object):
         data={}
         response = self._get(self.url['examenes'])
         html = BeautifulSoup(response.content, 'html.parser')
+        
 
         #Parsear la tabla de examenes
         keys = (    'Fecha', 
@@ -95,24 +93,27 @@ class SessionSysacad(object):
                     'Plan', 
                     'Codigo'
                 )
-        data['examenes'] = self._data_from_table(html,keys)
-        for examen in data['examenes']:
-            examen['fecha'] = dateparser.parse(examen['fecha'])
-            examen['nota'] = {
-				"uno": 1,
-				"dos": 2,
-				"tres": 3,
-				"cuatro": 4,
-				"cinco": 5,
-				"seis": 6,
-				"siete": 7,
-				"ocho": 8,
-				"nueve": 9,
-				"diez": 10,
-				"Ausen.": None
-			}[examen['nota']]
-            examen['codigo'] = int(examen['codigo'])
-        
+        data = self._data_from_tables(html,keys)
+        for examen in data:
+            if examen['Nota'] in {"uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "Ausen."}:
+                examen['Nota'] = {
+                    "uno": 1,
+                    "dos": 2,
+                    "tres": 3,
+                    "cuatro": 4,
+                    "cinco": 5,
+                    "seis": 6,
+                    "siete": 7,
+                    "ocho": 8,
+                    "nueve": 9,
+                    "diez": 10,
+                    "Ausen.": None
+                }[examen['Nota']]
+                
+            
+            if examen['Codigo'] and examen['Codigo'].isdigit():
+                examen['Codigo'] = int(examen['Codigo'])        
+            
         return data
 
     # def get_inasistencias(self,link): #TODO: Ejecutar solo cuando se pida para una sola materia
@@ -127,8 +128,14 @@ class SessionSysacad(object):
     #     data['inasistencias'] = self._data_from_table(html,keys)
     #     for inasistencia in data['inasistencias']:
     #         inasistencia['fecha'] = dateparser.parse(inasistencia['fecha'])
+    def get_inasistencias(self,link,materia):
+        data={}
         
         return data
+
+
+    
+        
 
     def get_cursando(self):
         data={}
@@ -144,7 +151,7 @@ class SessionSysacad(object):
                     'Condición',
                     'Obs.',
                     'Inasistencias' )
-        data['cursando'] = self._data_from_table(html,keys)
+        data['cursando'] = self._data_from_tables(html,keys)
        
         
         return data
