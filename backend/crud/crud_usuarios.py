@@ -45,7 +45,8 @@ class CRUDUsuarios:
     def get_all_usuario(self,  db: Session) -> Any:
     #Obtener todos los usuarios
         try:
-            return db.query(models.Usuario).options(defer('password')).all()
+            #return db.query(models.Usuario).options(defer('password')).all()
+            return db.query(models.Usuario).all()
         except SQLAlchemyError as e: 
             print("Error obteniendo usuarios: ", e)
             return None
