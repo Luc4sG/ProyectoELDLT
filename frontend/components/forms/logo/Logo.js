@@ -1,6 +1,6 @@
 import {View, Text} from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import {icons, COLORS, FONTS} from '../../constants'
+import {icons, COLORS, FONTS} from '../../../constants'
 
 export default function Logo()  {
     return (

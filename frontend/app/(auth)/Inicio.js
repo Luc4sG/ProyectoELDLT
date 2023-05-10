@@ -5,7 +5,7 @@ import  Carousel from 'react-native-reanimated-carousel';
 import AnimatedDotsCarousel from 'react-native-animated-dots-carousel';
 import { Stack, usePathname, useRouter } from "expo-router"
 import { SvgXml } from "react-native-svg";
-import { Logo } from "../../components";
+import  Logo  from "../../components/forms/logo/Logo";
 
 
 //Constantes
@@ -43,7 +43,7 @@ const Inicio = () => {
                 )}
             </Pressable>    
 
-            <Pressable onPress={() => console.log(ruta)}>
+            <Pressable onPress={() => router.push('/Register')}>
                 {({ pressed }) => (
                     <Text style={{ textDecorationLine:'underline', marginBottom:8, fontSize: 18, fontFamily: FONTS.Montserrat, color: pressed ? COLORS.fColorGray : COLORS.fColorBlack }}>
                     Crear una nueva cuenta

@@ -1,6 +1,4 @@
-import  CarouselTemplate  from "./carouselInfo/CarouselTemplate";
-import  Logo  from "./logo/Logo";
+import  LoginForm           from "./forms/loginForm/LoginForm";
 export {
-    CarouselTemplate,
-    Logo
+    LoginForm
 };
